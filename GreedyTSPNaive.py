@@ -13,40 +13,55 @@ import math
 82.1407 41.0270
 44.4703 89.3650
 '''
-#define function to compute euclidian distance for 2 points
+# Create adjacency matrix
+
+# define function to compute euclidian distance for 2 points
 def dist(c1,c2):
-    return int(math.floor(math.sqrt(math.pow(c1[0]-c2[0],2)+math.pow(c1[1]-c2[1],2)))) #should also round up?
+    return int(math.floor(math.sqrt(math.pow(c1[0]-c2[0], 2)+math.pow(c1[1]-c2[1],2)))) # should also round up?
 
 #read data
 coords = []
 n = int(raw_input())
-for x in range(0,n):
+for x in range(0, n):
     line = raw_input()
     splitline = line.split(" ")
-    coords.append([float(splitline[0]),float(splitline[1]),x])
+    coords.append([float(splitline[0]), float(splitline[1]), x])
 
+mat = range(0, n)
 
-tour = [0] #init tour (output)
-#startingpoint = coords[0] #startingpoint = coordinates of index zero (this is also the last point)
-currentpoint = coords[0]
-del coords[0] #remove index 0 as we won't have to compute distance to index 0 anymore (I guess this can happen faster)
+# Populate adjacency matrix (simple)
+for i in range(0, n):
+    row = []
+    for j in range(0, n):
+        row.append(dist(coords[i], coords[j]))
+
+    mat[i] = row
+
+'''
+# Print adjacency matrix #debug
+for i in range(0, n):
+    print mat[i]
+'''
+
+tour = [0]  # init tour (output)
+del coords[0]  # remove index 0 as we won't have to compute distance to index 0 anymore (I guess this can happen faster)
 best = 1000000000
+currentpoint = 0
+#for i in range(0,n):
 
 
-while len(coords) > 0:
-    for i in xrange(0,len(coords)):
+for i in range(0,n-1):  # for every row in matrix
+    for j in range(0,n):  # for every col in row (every distance of every edge adjacent to the vertex the row represents)
+        if j not in tour and mat[currentpoint][j] != 0: #store n in dictionary (hashmap)
+            # print j
+            if best > mat[currentpoint][j]:
+                best = mat[currentpoint][j]
+                bestind = j
 
-        #if current(previous) best is slower than the new one, update best
-        if best > dist(currentpoint,coords[i]):
-            best = dist(currentpoint,coords[i])
-            best_id = coords[i][2]
-            best_index = i
-
-
-    tour.append(coords[best_index][2])
-    currentpoint = coords[best_index]
-    del coords[best_index]
-    best = 1000000000
+    tour.append(bestind)
+    # print tour #debug
+    currentpoint = bestind
+    best = 1000000
 
 for i in tour:
     print i
